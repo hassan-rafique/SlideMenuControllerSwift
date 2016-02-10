@@ -9,7 +9,7 @@ import UIKit
 
 public struct SlideMenuOptions {
     public static var leftViewWidth: CGFloat = 270.0
-    public static var leftBezelWidth: CGFloat? = 16.0
+    public static var leftBezelWidth: CGFloat = 16.0
     public static var contentViewScale: CGFloat = 0.96
     public static var contentViewOpacity: CGFloat = 0.5
     public static var shadowOpacity: CGFloat = 0.0
@@ -18,11 +18,10 @@ public struct SlideMenuOptions {
     public static var panFromBezel: Bool = true
     public static var animationDuration: CGFloat = 0.4
     public static var rightViewWidth: CGFloat = 270.0
-    public static var rightBezelWidth: CGFloat? = 16.0
+    public static var rightBezelWidth: CGFloat = 16.0
     public static var rightPanFromBezel: Bool = true
     public static var hideStatusBar: Bool = true
     public static var pointOfNoReturnWidth: CGFloat = 44.0
-    public static var simultaneousGestureRecognizers: Bool = true
 	public static var opacityViewBackgroundColor: UIColor = UIColor.blackColor()
 }
 
@@ -95,7 +94,7 @@ public class SlideMenuController: UIViewController, UIGestureRecognizerDelegate 
 
     deinit { }
     
-    public func initView() {
+    func initView() {
         mainContainerView = UIView(frame: view.bounds)
         mainContainerView.backgroundColor = UIColor.clearColor()
         mainContainerView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
@@ -834,9 +833,9 @@ public class SlideMenuController: UIViewController, UIGestureRecognizerDelegate 
         enableContentInteraction()
     }
     
-    // MARK: UIGestureRecognizerDelegate
+    //pragma mark – UIGestureRecognizerDelegate
     public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
-        
+    
         let point: CGPoint = touch.locationInView(view)
         
         if gestureRecognizer == leftPanGesture {
@@ -852,25 +851,17 @@ public class SlideMenuController: UIViewController, UIGestureRecognizerDelegate 
         return true
     }
     
-    // returning true here helps if the main view is fullwidth with a scrollview
-    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return SlideMenuOptions.simultaneousGestureRecognizers
-    }
-    
     private func slideLeftForGestureRecognizer( gesture: UIGestureRecognizer, point:CGPoint) -> Bool{
         return isLeftOpen() || SlideMenuOptions.panFromBezel && isLeftPointContainedWithinBezelRect(point)
     }
     
     private func isLeftPointContainedWithinBezelRect(point: CGPoint) -> Bool{
-        if let bezelWidth = SlideMenuOptions.leftBezelWidth {
-            var leftBezelRect: CGRect = CGRectZero
-            var tempRect: CGRect = CGRectZero
+        var leftBezelRect: CGRect = CGRectZero
+        var tempRect: CGRect = CGRectZero
+        let bezelWidth: CGFloat = SlideMenuOptions.leftBezelWidth
         
-            CGRectDivide(view.bounds, &leftBezelRect, &tempRect, bezelWidth, CGRectEdge.MinXEdge)
-            return CGRectContainsPoint(leftBezelRect, point)
-        } else {
-            return true
-        }
+        CGRectDivide(view.bounds, &leftBezelRect, &tempRect, bezelWidth, CGRectEdge.MinXEdge)
+        return CGRectContainsPoint(leftBezelRect, point)
     }
     
     private func isPointContainedWithinLeftRect(point: CGPoint) -> Bool {
@@ -884,17 +875,13 @@ public class SlideMenuController: UIViewController, UIGestureRecognizerDelegate 
     }
     
     private func isRightPointContainedWithinBezelRect(point: CGPoint) -> Bool {
-        if let rightBezelWidth = SlideMenuOptions.rightBezelWidth {
-            var rightBezelRect: CGRect = CGRectZero
-            var tempRect: CGRect = CGRectZero
-            let bezelWidth: CGFloat = CGRectGetWidth(view.bounds) - rightBezelWidth
+        var rightBezelRect: CGRect = CGRectZero
+        var tempRect: CGRect = CGRectZero
+        let bezelWidth: CGFloat = CGRectGetWidth(view.bounds) - SlideMenuOptions.rightBezelWidth
         
-            CGRectDivide(view.bounds, &tempRect, &rightBezelRect, bezelWidth, CGRectEdge.MinXEdge)
+        CGRectDivide(view.bounds, &tempRect, &rightBezelRect, bezelWidth, CGRectEdge.MinXEdge)
         
-            return CGRectContainsPoint(rightBezelRect, point)
-        } else {
-            return true
-        }
+        return CGRectContainsPoint(rightBezelRect, point)
     }
     
     private func isPointContainedWithinRightRect(point: CGPoint) -> Bool {
